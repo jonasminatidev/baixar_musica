@@ -1,0 +1,6 @@
+streamlit>=1.30.0
+spotipy>=2.23.0
+yt-dlp>=2024.3.10
+mutagen>=1.47.0
+pillow>=10.0.0
+requests>=2.31.0

@@ -1,0 +1,34 @@
+Plano de Projeto: Sistema Automatizado de Coleta e Filtragem de Discografias
+
+Este documento detalha o planejamento para o desenvolvimento de um sistema em Python voltado para a busca, filtragem inteligente e download automatizado de músicas de artistas específicos. O objetivo central da ferramenta é otimizar o processo de aquisição de mídias, resolvendo o problema de duplicidade de faixas através de uma engine de normalização de títulos e proporcionando uma etapa de curadoria onde o próprio usuário define qual versão de uma música deseja baixar.
+
+Fase 1: Coleta de Metadados (API do Spotify)
+A primeira etapa do projeto consiste em estabelecer a fonte de dados primária. Em vez de realizar buscas diretas no YouTube — onde os títulos costumam ser desorganizados e misturados com covers ou re-uploads —, o sistema utilizará a API oficial do Spotify por meio da biblioteca spotipy.
+
+Funcionalidade: O usuário digita o nome do artista e o programa consulta a plataforma para extrair a discografia completa (álbuns, EPs e singles).
+
+Benefício: Garante que os nomes base das músicas sejam oficiais, limpos e estruturados, facilitando as etapas seguintes de tratamento de dados.
+
+Fase 2: Normalização e Agrupamento de Versões (Core Logic)
+O grande diferencial técnico do projeto acontece nesta fase, cujo foco é agrupar faixas idênticas que possuem variações de lançamento (como versões ao vivo, remixes, edições acústicas ou remasters).
+
+Processamento: Será desenvolvida uma função em Python utilizando normalização de strings (remoção de acentos, conversão para minúsculas) e expressões regulares (regex). Essa rotina identificará e desconsiderará termos comuns de sufixo, como remix, live, acoustic, radio edit, version e remaster.
+
+Estruturação: O sistema agrupará todas as variações encontradas sob uma única chave base, criando um dicionário estruturado que servirá de base para a tomada de decisão do usuário.
+
+Fase 3: Interface de Decisão do Usuário
+Com os grupos de músicas devidamente mapeados e limpos, a aplicação apresentará os resultados de forma organizada para que o usuário evite o download de versões indesejadas.
+
+Abordagem de Implementação: O projeto poderá contar com uma interface de linha de comando (CLI) interativa utilizando a biblioteca questionary (permitindo navegar por menus com as setas do teclado) ou, alternativamente, uma interface gráfica web leve construída com Streamlit, exibindo caixas de seleção organizadas por música principal.
+
+Interação: O usuário revisará cada grupo e selecionará explicitamente a versão exata que deseja adicionar à fila de download.
+
+Fase 4: Automação de Download (yt-dlp e FFmpeg)
+A etapa final traduz as escolhas do usuário em arquivos de áudio locais, finalizando o ciclo do sistema.
+
+Execução: O programa pegará a lista final de músicas selecionadas e utilizará a ferramenta de linha de comando yt-dlp em conjunto com o conversor multimídia FFmpeg.
+
+Processo: Para cada faixa, o yt-dlp buscará o vídeo correspondente mais preciso no YouTube, fará o download do fluxo de áudio e o converterá automaticamente para o formato MP3, salvando os arquivos em um diretório dedicado ao artista.
+
+Considerações Finais
+Este plano estruturado em módulos independentes — Coleta, Normalização, Interface e Download — permite um desenvolvimento iterativo e seguro. É possível construir e testar cada componente isoladamente (garantindo que a lógica de agrupamento funcione perfeitamente antes de integrar a interface gráfica ou o baixador de mídia), resultando em uma ferramenta robusta, eficiente e totalmente personalizada.
