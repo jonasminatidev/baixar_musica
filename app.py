@@ -68,6 +68,16 @@ st.markdown("""
         visibility: hidden !important;
     }
     
+    /* Remove overlay fosco ao abrir a sidebar */
+    [data-testid="stSidebarCollapsedControl"],
+    .stAppViewBlockContainer::before,
+    section[data-testid="stSidebar"] ~ div[data-testid="stAppViewContainer"]::before {
+        backdrop-filter: none !important;
+    }
+    div[data-testid="stOverlay"] {
+        display: none !important;
+    }
+    
     /* Cabeçalho Minimalista Integrado */
     .header-container {
         padding: 0.5rem 0 1.5rem 0;
