@@ -3,16 +3,21 @@ import sys
 import base64
 import subprocess
 import streamlit as st
+from PIL import Image
 
 # Importa módulos internos do core
 from core.metadata import get_artist_discography
 from core.normalizer import group_tracks_by_base_song
 from core.downloader import download_track
 
+# Carrega o ícone personalizado do projeto
+_favicon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "musica.ico")
+_favicon = Image.open(_favicon_path) if os.path.exists(_favicon_path) else "🎵"
+
 # Configuração da Página
 st.set_page_config(
     page_title="Baixa Música - Download Inteligente",
-    page_icon="🎵",
+    page_icon=_favicon,
     layout="wide",
     initial_sidebar_state="expanded"
 )
