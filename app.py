@@ -59,21 +59,21 @@ st.markdown("""
         background-image: none !important;
     }
     
-    /* Esconde Deploy, Running e Menu do Streamlit */
+    /* Esconde apenas Deploy, Running e Menu hamburger do Streamlit */
     .stDeployButton,
     [data-testid="stStatusWidget"],
-    #MainMenu,
-    header[data-testid="stHeader"] {
+    #MainMenu {
         display: none !important;
         visibility: hidden !important;
     }
     
-    /* Remove overlay fosco ao abrir a sidebar */
-    [data-testid="stSidebarCollapsedControl"],
-    .stAppViewBlockContainer::before,
-    section[data-testid="stSidebar"] ~ div[data-testid="stAppViewContainer"]::before {
-        backdrop-filter: none !important;
+    /* Torna o header transparente mas mantém o botão da sidebar acessível */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        border: none !important;
     }
+    
+    /* Remove overlay fosco ao abrir a sidebar */
     div[data-testid="stOverlay"] {
         display: none !important;
     }
