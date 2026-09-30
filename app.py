@@ -59,6 +59,15 @@ st.markdown("""
         background-image: none !important;
     }
     
+    /* Esconde Deploy, Running e Menu do Streamlit */
+    .stDeployButton,
+    [data-testid="stStatusWidget"],
+    #MainMenu,
+    header[data-testid="stHeader"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
     /* Cabeçalho Minimalista Integrado */
     .header-container {
         padding: 0.5rem 0 1.5rem 0;
@@ -407,15 +416,28 @@ if st.session_state.discography and st.session_state.groups:
     else:
         target_save_folder = st.session_state.download_folder
         if st.button(f"🚀 Iniciar Download ({len(tracks_to_download)} Músicas)", type="primary", use_container_width=True):
+            # Inicializa controle de cancelamento
+            st.session_state.download_cancelled = False
+            
             st.markdown("##### Processando Downloads...")
+            
+            # Botão de Cancelar
+            cancel_placeholder = st.empty()
             progress_bar = st.progress(0)
             status_text = st.empty()
             log_container = st.container()
             
             results_summary = []
             total_count = len(tracks_to_download)
+            cancelled = False
             
             for idx, trk in enumerate(tracks_to_download):
+                # Renderiza botão de cancelar a cada iteração
+                if cancel_placeholder.button("⛔ Cancelar Downloads Restantes", key=f"cancel_{idx}", use_container_width=True):
+                    cancelled = True
+                    status_text.markdown(f"### ⚠️ Download interrompido pelo usuário na faixa {idx+1}/{total_count}")
+                    break
+                
                 pct = (idx + 1) / total_count
                 progress_bar.progress(pct)
                 status_text.markdown(f"**Baixando ({idx+1}/{total_count}):** `{trk['title']}`...")
@@ -435,8 +457,20 @@ if st.session_state.discography and st.session_state.groups:
                         st.info(f"ℹ️ {res['title']} (Já existia na pasta)")
                     else:
                         st.error(f"❌ Erro em {res['title']}: {res['message']}")
-                        
-            status_text.markdown("### 🎉 Todos os downloads foram concluídos com sucesso!")
-            st.balloons()
+            
+            # Remove o botão de cancelar ao finalizar
+            cancel_placeholder.empty()
+            
+            # Resumo final
+            ok_count = sum(1 for r in results_summary if r['status'] in ('success', 'already_exists'))
+            err_count = sum(1 for r in results_summary if r['status'] == 'error')
+            
+            if cancelled:
+                remaining = total_count - len(results_summary)
+                st.warning(f"Download cancelado. **{ok_count}** baixadas com sucesso, **{err_count}** com erro, **{remaining}** não iniciadas.")
+            else:
+                status_text.markdown("### 🎉 Todos os downloads foram concluídos com sucesso!")
+                st.balloons()
             
             st.markdown(f"📍 **Arquivos salvos em:** `{os.path.abspath(target_save_folder)}`")
+
