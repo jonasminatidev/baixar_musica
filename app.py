@@ -360,16 +360,20 @@ if st.session_state.discography and st.session_state.groups:
             for k, grp in groups.items():
                 def_v = next((v for v in grp['versions'] if "Estúdio" in v['version_label']), grp['versions'][0])
                 st.session_state.selected_versions[k] = def_v['id']
+                st.session_state[f"radio_{k}"] = def_v['id']
             st.rerun()
     with btn_col2:
         if st.button("✅ Selecionar Padrão de Todas", use_container_width=True):
             for k, grp in groups.items():
-                st.session_state.selected_versions[k] = grp['versions'][0]['id']
+                val = grp['versions'][0]['id']
+                st.session_state.selected_versions[k] = val
+                st.session_state[f"radio_{k}"] = val
             st.rerun()
     with btn_col3:
         if st.button("❌ Desmarcar Todas", use_container_width=True):
             for k in groups.keys():
                 st.session_state.selected_versions[k] = "skip"
+                st.session_state[f"radio_{k}"] = "skip"
             st.rerun()
 
     st.markdown("<br/>", unsafe_allow_html=True)
