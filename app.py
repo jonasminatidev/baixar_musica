@@ -20,28 +20,23 @@ st.set_page_config(
 def open_native_folder_dialog(current_path: str) -> str:
     """
     Abre o explorador de arquivos nativo do Windows usando PowerShell.
-    Evita o erro 'main thread is not in main loop' do Tkinter.
+    Usa script .ps1 externo com flag -STA (obrigatório no Windows 10 para diálogos de UI).
     """
     try:
-        ps_cmd = (
-            "[System.Reflection.Assembly]::LoadWithPartialName('System.windows.forms') | Out-Null; "
-            "$dialog = New-Object System.Windows.Forms.FolderBrowserDialog; "
-            "$dialog.Description = 'Selecione a pasta para salvar as músicas'; "
-            "$dialog.ShowNewFolderButton = $true; "
-            "if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { "
-            "Write-Output $dialog.SelectedPath "
-            "}"
-        )
+        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", "folder_picker.ps1")
         proc = subprocess.run(
-            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps_cmd],
+            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-STA", "-File", script_path],
             capture_output=True,
             text=True,
             encoding='utf-8',
-            errors='ignore'
+            errors='ignore',
+            timeout=60
         )
         selected = proc.stdout.strip()
-        if selected and os.path.exists(selected):
+        if selected and selected != "CANCELLED" and os.path.exists(selected):
             return selected
+    except subprocess.TimeoutExpired:
+        pass
     except Exception as e:
         st.error(f"Erro ao abrir o navegador de arquivos: {e}")
     return current_path
